@@ -154,3 +154,11 @@ mod_assert.equal(stack, [
     'VError: test error',
     '    at Object.<anonymous> (tst.verror.js)'
 ].join('\n') + '\n' + nodestack);
+
+/* undefined and null arguments to sprintf */
+err = new VError('undefined %s and null %s', undefined, null);
+mod_assert.equal(err.message, 'undefined undefined and null null');
+
+suberr = new Error('root cause');
+err = new VError(suberr, 'undefined %s and null %s', undefined, null);
+mod_assert.equal(err.message, 'undefined undefined and null null: root cause');

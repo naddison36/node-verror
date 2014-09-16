@@ -1,11 +1,11 @@
 {
 	"name": "verror",
-	"version": "1.4.0",
-	"description": "richer JavaScript errors",
+	"version": "0.0.1",
+	"description": "richer JavaScript errors that won't fail",
 	"main": "./lib/verror.js",
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/davepacheco/node-verror.git"
+		"url": "git://github.com/naddison36/node-verror.git"
 	},
 	"dependencies": {
 		"extsprintf": "1.0.3"
