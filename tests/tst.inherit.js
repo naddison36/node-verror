@@ -28,14 +28,16 @@ WErrorChild.prototype.name = 'WErrorChild';
 
 
 suberr = new Error('root cause');
+suberr.name = 'suberrName';
 err = new VErrorChild(suberr, 'top');
 mod_assert.ok(err instanceof Error);
 mod_assert.ok(err instanceof VError);
 mod_assert.ok(err instanceof VErrorChild);
 mod_assert.equal(err.cause(), suberr);
 mod_assert.equal(err.message, 'top: root cause');
-mod_assert.equal(err.toString(), 'VErrorChild: top: root cause');
-mod_assert.equal(err.stack.split('\n')[0], 'VErrorChild: top: root cause');
+mod_assert.equal(err.name, 'suberrName');
+mod_assert.equal(err.toString(), 'suberrName: top: root cause');
+mod_assert.equal(err.stack.split('\n')[0], 'suberrName: top: root cause');
 
 suberr = new Error('root cause');
 err = new WErrorChild(suberr, 'top');
@@ -44,10 +46,11 @@ mod_assert.ok(err instanceof WError);
 mod_assert.ok(err instanceof WErrorChild);
 mod_assert.equal(err.cause(), suberr);
 mod_assert.equal(err.message, 'top');
+mod_assert.equal(err.name, 'Error');
 mod_assert.equal(err.toString(),
-	'WErrorChild: top; caused by Error: root cause');
+	'Error: top; caused by Error: root cause');
 mod_assert.equal(err.stack.split('\n')[0],
-	'WErrorChild: top; caused by Error: root cause');
+	'Error: top; caused by Error: root cause');
 
 
 // Test that `<Ctor>.toString()` uses the ctor name. I.e. setting

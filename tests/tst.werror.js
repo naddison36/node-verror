@@ -77,35 +77,40 @@ mod_assert.ok(err.cause() === undefined);
 /* caused by another error, with no additional message */
 suberr = new Error('root cause');
 err = new WError(suberr);
+mod_assert.equal(err.name, 'Error');
 mod_assert.equal(err.message, '');
-mod_assert.equal(err.toString(), 'WError; caused by Error: root cause');
+mod_assert.equal(err.toString(), 'Error; caused by Error: root cause');
 mod_assert.ok(err.cause() === suberr);
 
 err = new WError({ 'cause': suberr });
+mod_assert.equal(err.name, 'Error');
 mod_assert.equal(err.message, '');
-mod_assert.equal(err.toString(), 'WError; caused by Error: root cause');
+mod_assert.equal(err.toString(), 'Error; caused by Error: root cause');
 mod_assert.ok(err.cause() === suberr);
 
 /* caused by another error, with annotation */
+suberr.name = 'suberrName';
 err = new WError(suberr, 'proximate cause: %d issues', 3);
 mod_assert.equal(err.message, 'proximate cause: 3 issues');
-mod_assert.equal(err.toString(), 'WError: proximate cause: 3 issues; ' +
-    'caused by Error: root cause');
+mod_assert.equal(err.name, 'suberrName');
+mod_assert.equal(err.toString(), 'suberrName: proximate cause: 3 issues; ' +
+    'caused by suberrName: root cause');
 mod_assert.ok(err.cause() === suberr);
 stack = cleanStack(err.stack);
 mod_assert.equal(stack, [
-    'WError: proximate cause: 3 issues; caused by Error: root cause',
+    'suberrName: proximate cause: 3 issues; caused by suberrName: root cause',
     '    at Object.<anonymous> (tst.werror.js)'
 ].join('\n') + '\n' + nodestack);
 
 err = new WError({ 'cause': suberr }, 'proximate cause: %d issues', 3);
 mod_assert.equal(err.message, 'proximate cause: 3 issues');
-mod_assert.equal(err.toString(), 'WError: proximate cause: 3 issues; ' +
-    'caused by Error: root cause');
+mod_assert.equal(err.name, 'suberrName');
+mod_assert.equal(err.toString(), 'suberrName: proximate cause: 3 issues; ' +
+    'caused by suberrName: root cause');
 mod_assert.ok(err.cause() === suberr);
 stack = cleanStack(err.stack);
 mod_assert.equal(stack, [
-    'WError: proximate cause: 3 issues; caused by Error: root cause',
+    'suberrName: proximate cause: 3 issues; caused by suberrName: root cause',
     '    at Object.<anonymous> (tst.werror.js)'
 ].join('\n') + '\n' + nodestack);
 
@@ -113,27 +118,31 @@ mod_assert.equal(stack, [
 suberr = err;
 err = new WError(suberr, 'top');
 mod_assert.equal(err.message, 'top');
-mod_assert.equal(err.toString(), 'WError: top; caused by WError: ' +
-    'proximate cause: 3 issues; caused by Error: root cause');
+mod_assert.equal(err.name, 'suberrName');
+mod_assert.equal(err.toString(), 'suberrName: top; caused by suberrName: ' +
+    'proximate cause: 3 issues; caused by suberrName: root cause');
 mod_assert.ok(err.cause() === suberr);
 
 err = new WError({ 'cause': suberr }, 'top');
 mod_assert.equal(err.message, 'top');
-mod_assert.equal(err.toString(), 'WError: top; caused by WError: ' +
-    'proximate cause: 3 issues; caused by Error: root cause');
+mod_assert.equal(err.name, 'suberrName');
+mod_assert.equal(err.toString(), 'suberrName: top; caused by suberrName: ' +
+    'proximate cause: 3 issues; caused by suberrName: root cause');
 mod_assert.ok(err.cause() === suberr);
 
 /* caused by a VError */
 suberr = new VError(new Error('root cause'), 'mid');
 err = new WError(suberr, 'top');
 mod_assert.equal(err.message, 'top');
+mod_assert.equal(err.name, 'Error');
 mod_assert.equal(err.toString(),
-    'WError: top; caused by VError: mid: root cause');
+    'Error: top; caused by Error: mid: root cause');
 mod_assert.ok(err.cause() === suberr);
 
 /* null cause (for backwards compatibility with older versions) */
 err = new WError(null, 'my error');
 mod_assert.equal(err.message, 'my error');
+mod_assert.equal(err.name, 'WError');
 mod_assert.equal(err.toString(), 'WError: my error');
 mod_assert.ok(err.cause() === undefined);
 stack = cleanStack(err.stack);
@@ -144,11 +153,13 @@ mod_assert.equal(stack, [
 
 err = new WError({ 'cause': null }, 'my error');
 mod_assert.equal(err.message, 'my error');
+mod_assert.equal(err.name, 'WError');
 mod_assert.equal(err.toString(), 'WError: my error');
 mod_assert.ok(err.cause() === undefined);
 
 err = new WError(null);
 mod_assert.equal(err.message, '');
+mod_assert.equal(err.name, 'WError');
 mod_assert.equal(err.toString(), 'WError');
 mod_assert.ok(err.cause() === undefined);
 stack = cleanStack(err.stack);
